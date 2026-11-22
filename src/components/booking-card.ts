@@ -26,8 +26,13 @@ export class BookingCard extends HTMLElement {
       button:focus-visible { outline: 3px solid #a15c00; outline-offset: 3px; }
     `
     const article = document.createElement('article')
+    const note = document.createElement('p')
+    const noteSlot = document.createElement('slot')
+    noteSlot.name = 'note'
+    noteSlot.textContent = 'Комментарий не задан'
+    note.append(noteSlot)
     this.button.type = 'button'
-    article.append(this.nameText, this.seatsText, this.sourceText, this.statusText, this.button)
+    article.append(this.nameText, this.seatsText, this.sourceText, this.statusText, this.button, note)
     // А1: создайте открытый shadow root, поместите в него style и article.
     const shadow = this.attachShadow({ mode: 'open' })
     shadow.append(style, article)

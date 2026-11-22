@@ -1,8 +1,8 @@
 import './style.css'
 import './components/booking-card'
+import type { BookingCard } from './components/booking-card'
 import type { Booking, BookingStatus } from './models/booking'
 import { initialBookings } from './models/booking'
-import { legacyCard, updateLegacy } from './legacy-card'
 import { mountLab } from './lab'
 // А1: импортируйте модуль регистрации. А5: импортируйте тип BookingCard.
 
@@ -35,19 +35,21 @@ const form = document.querySelector<HTMLFormElement>('#form')!
 const message = document.querySelector<HTMLElement>('#message')!
 let received = 0
 
-function makeCard(booking: Booking): HTMLElement {
+function makeCard(booking: Booking): BookingCard {
   // А5: создайте booking-card и передайте booking вместо обычной карточки.
-  return legacyCard(booking, setBookingStatus)
+  const card = document.createElement('booking-card') as BookingCard
+  card.booking = booking
+  return card
 }
-function updateCard(card: HTMLElement, booking: Booking) {
+function updateCard(card: BookingCard, booking: Booking) {
   // А5: обновляйте публичное свойство booking.
-  updateLegacy(card, booking)
+  card.booking = booking
 }
 
 // Готовая синхронизация сохраняет экземпляры по id. Переписывать её не требуется.
-const allCards = new Map<string, HTMLElement>()
-const confirmedCards = new Map<string, HTMLElement>()
-function sync(target: HTMLElement, cards: Map<string, HTMLElement>, rows: Booking[]) {
+const allCards = new Map<string, BookingCard>()
+const confirmedCards = new Map<string, BookingCard>()
+function sync(target: HTMLElement, cards: Map<string, BookingCard>, rows: Booking[]) {
   for (const [id, card] of cards) {
     if (!rows.some(row => row.id === id)) { card.remove(); cards.delete(id) }
   }
@@ -81,6 +83,7 @@ lists.addEventListener('booking-status-request', (event) => {
   received += 1
   events.textContent = String(received)
   // А5: примените запрос готовой функцией setBookingStatus.
+  setBookingStatus(id, nextStatus)
 })
 form.addEventListener('submit', (event) => {
   event.preventDefault()
